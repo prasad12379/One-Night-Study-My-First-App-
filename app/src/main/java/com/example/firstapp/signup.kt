@@ -25,7 +25,7 @@ class signup : AppCompatActivity() {
         val pass = findViewById<TextInputEditText>(R.id.ipPasswordR)
         val btn  = findViewById<Button>(R.id.btnSignUpR)
 
-        database = FirebaseDatabase.getInstance().getReference("Users")
+        database = FirebaseDatabase.getInstance("https://database-3d487-default-rtdb.firebaseio.com/").getReference("Users")
 
         btn.setOnClickListener {
 

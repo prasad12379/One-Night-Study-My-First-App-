@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.database.core.Context
 
 class MyAdapter1(val context: Activity,val firts_page_data: ArrayList<first_page_data_compact>):

@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#0B1020"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- ================= HEADER ================= -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            app:cardCornerRadius="18dp"
+            app:cardElevation="8dp"
+            app:cardBackgroundColor="#0F172A">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:padding="16dp">
+
+                <ImageView
+                    android:layout_width="72dp"
+                    android:layout_height="72dp"
+                    android:src="@drawable/engg"
+                    android:background="@drawable/profile_circle_bg"
+                    android:padding="10dp"/>
+
+                <TextView
+                    android:id="@+id/tvUsername"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Username"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
+
+                <TextView
+                    android:text="prasaddhokane9@gmail.com"
+                    android:textSize="12sp"
+                    android:textColor="#CBD5F5" android:layout_height="0dp" android:layout_width="0dp"/>
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- ================= OPTIONS ================= -->
+
+        <!-- Purchased PDFs -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            app:cardCornerRadius="14dp"
+            app:cardElevation="4dp"
+            app:cardBackgroundColor="#111827">
+
+            <TextView
+                android:id="@+id/purchase_pdf"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:gravity="center_vertical"
+                android:paddingHorizontal="16dp"
+                android:text="My Purchased PDFs"
+                android:textSize="14sp"
+                android:textColor="#E5E7EB"/>
+        </androidx.cardview.widget.CardView>
+
+        <!-- Settings -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            app:cardCornerRadius="14dp"
+            app:cardElevation="4dp"
+            app:cardBackgroundColor="#111827">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:gravity="center_vertical"
+                android:paddingHorizontal="16dp"
+                android:text="Settings"
+                android:textSize="14sp"
+                android:textColor="#E5E7EB"/>
+        </androidx.cardview.widget.CardView>
+
+        <!-- Help -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            app:cardCornerRadius="14dp"
+            app:cardElevation="4dp"
+            app:cardBackgroundColor="#111827">
+
+            <TextView
+                android:id="@+id/help_support"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:gravity="center_vertical"
+                android:paddingHorizontal="16dp"
+                android:text="Help and Support"
+                android:textSize="14sp"
+                android:textColor="#E5E7EB"/>
+        </androidx.cardview.widget.CardView>
+
+        <!-- ================= LOGOUT ================= -->
+        <com.google.android.material.button.MaterialButton
+            android:layout_width="match_parent"
+            android:layout_height="54dp"
+            android:text="Logout"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF"
+            app:backgroundTint="#EF4444"
+            app:cornerRadius="18dp"/>
+
+
+
+    </LinearLayout>
+
+</ScrollView>

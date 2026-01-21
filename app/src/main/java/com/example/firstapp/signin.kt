@@ -27,7 +27,7 @@ class signin : AppCompatActivity() {
         val btn = findViewById<Button>(R.id.btnSignIn)
         val btn2 = findViewById<TextView>(R.id.btnCreateAccount)
 
-        database = FirebaseDatabase.getInstance().getReference("Users")
+        database = FirebaseDatabase.getInstance("https://database-3d487-default-rtdb.firebaseio.com/").getReference("Users")
 
         btn.setOnClickListener {
 
@@ -54,11 +54,18 @@ class signin : AppCompatActivity() {
 
                 val dbEmail = userSnap.child("email").value.toString()
                 val dbPass = userSnap.child("password").value.toString()
+                val dbUsername = userSnap.child("username").value.toString()
 
                 if (dbEmail == email && dbPass == pass) {
 
+                    // 🔐 Save username in SharedPreferences
+                    val sharedPref = getSharedPreferences("USER_PREF", MODE_PRIVATE)
+                    sharedPref.edit()
+                        .putString("USERNAME", dbUsername)
+                        .apply()
+
                     Toast.makeText(this, "Login Successful", Toast.LENGTH_SHORT).show()
-                    startActivity(Intent(this, mainpage::class.java))
+                    startActivity(Intent(this, MainActivity_page1::class.java))
                     finish()
                     return@addOnSuccessListener
                 }
@@ -67,4 +74,5 @@ class signin : AppCompatActivity() {
             Toast.makeText(this, "Incorrect email or password", Toast.LENGTH_SHORT).show()
         }
     }
+
 }
