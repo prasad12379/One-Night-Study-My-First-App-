@@ -1,5 +1,6 @@
 package com.example.firstapp
 
+import PdfLibraryModel
 import android.app.AlertDialog
 import android.content.Intent
 import android.net.Uri
@@ -8,6 +9,7 @@ import android.util.Log
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
+import com.google.firebase.database.FirebaseDatabase
 import retrofit2.*
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -55,17 +57,13 @@ class main_page_2 : AppCompatActivity() {
             .build()
             .create(ApiInterface::class.java)
 
-        // ================= API 1 : STREAM → BRANCH =================
+        // ================= STREAM → BRANCH =================
         api.getDataByStream(stream).enqueue(object : Callback<MyData> {
-
             override fun onResponse(call: Call<MyData>, response: Response<MyData>) {
-                if (!response.isSuccessful || response.body() == null) {
-                    Log.e("API", "Branch load failed")
-                    return
+                if (response.isSuccessful && response.body() != null) {
+                    branches.clear()
+                    branches.addAll(response.body()!!)
                 }
-
-                branches.clear()
-                branches.addAll(response.body()!!)
             }
 
             override fun onFailure(call: Call<MyData>, t: Throwable) {
@@ -93,7 +91,6 @@ class main_page_2 : AppCompatActivity() {
 
                     api.getDataByBranch(stream, branchh!!)
                         .enqueue(object : Callback<MyData> {
-
                             override fun onResponse(
                                 call: Call<MyData>,
                                 response: Response<MyData>
@@ -132,7 +129,6 @@ class main_page_2 : AppCompatActivity() {
 
                     api.getDataBySem(stream, branchh!!, semester!!)
                         .enqueue(object : Callback<MyData> {
-
                             override fun onResponse(
                                 call: Call<MyData>,
                                 response: Response<MyData>
@@ -195,6 +191,39 @@ class main_page_2 : AppCompatActivity() {
 
                         val pdfUrl = response.body()!!
 
+                        // 🔑 GET USER KEY (NOT USERNAME)
+                        val sharedPref =
+                            getSharedPreferences("USER_PREF", MODE_PRIVATE)
+                        val userKey = sharedPref.getString("USER_KEY", null)
+
+                        if (userKey == null) {
+                            Toast.makeText(
+                                this@main_page_2,
+                                "User not logged in",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            return
+                        }
+
+                        // 🔥 SAVE PDF IN USER LIBRARY
+                        val libraryRef = FirebaseDatabase
+                            .getInstance("https://database-3d487-default-rtdb.firebaseio.com/")
+                            .getReference("Users")
+                            .child(userKey)
+                            .child("library")
+                            .push()
+
+                        val pdfData = PdfLibraryModel(
+                            stream = stream,
+                            branch = branchh!!,
+                            semester = semester!!,
+                            subject = subject!!,
+                            pdfUrl = pdfUrl
+                        )
+
+                        libraryRef.setValue(pdfData)
+
+                        // 📄 OPEN PDF
                         startActivity(
                             Intent(Intent.ACTION_VIEW, Uri.parse(pdfUrl))
                         )
@@ -209,7 +238,5 @@ class main_page_2 : AppCompatActivity() {
                     }
                 })
         }
-
-
     }
 }

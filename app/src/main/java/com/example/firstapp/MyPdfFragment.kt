@@ -1,59 +1,100 @@
 package com.example.firstapp
 
+import PdfLibraryModel
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
+import android.widget.Toast
+import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.database.*
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [MyPdfFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class MyPdfFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var emptyText: TextView
+    private lateinit var adapter: MyPdfAdapter
+    private val pdfList = mutableListOf<PdfLibraryModel>()
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_my_pdf, container, false)
+    ): View {
+
+        val view = inflater.inflate(R.layout.fragment_my_pdf, container, false)
+
+        recyclerView = view.findViewById(R.id.rvMyPdfs)
+        emptyText = view.findViewById(R.id.tvEmptyLibrary)
+
+        recyclerView.layoutManager = LinearLayoutManager(requireContext())
+        adapter = MyPdfAdapter(pdfList) { pdf ->
+            // 🔗 Open PDF
+            startActivity(
+                Intent(Intent.ACTION_VIEW, Uri.parse(pdf.pdfUrl))
+            )
+        }
+        recyclerView.adapter = adapter
+
+        loadUserLibrary()
+
+        return view
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment MyPdfFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            MyPdfFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
+    private fun loadUserLibrary() {
+
+        val sharedPref =
+            requireActivity().getSharedPreferences("USER_PREF", 0)
+        val userKey = sharedPref.getString("USER_KEY", null)
+
+        if (userKey == null) {
+            Toast.makeText(requireContext(), "User not logged in", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val libraryRef = FirebaseDatabase
+            .getInstance("https://database-3d487-default-rtdb.firebaseio.com/")
+            .getReference("Users")
+            .child(userKey)
+            .child("library")
+
+        libraryRef.addValueEventListener(object : ValueEventListener {
+
+            override fun onDataChange(snapshot: DataSnapshot) {
+                pdfList.clear()
+
+                if (!snapshot.exists()) {
+                    emptyText.visibility = View.VISIBLE
+                    recyclerView.visibility = View.GONE
+                    return
                 }
+
+                for (pdfSnap in snapshot.children) {
+                    val pdf = pdfSnap.getValue(PdfLibraryModel::class.java)
+                    if (pdf != null) {
+                        pdfList.add(pdf)
+                    }
+                }
+
+                emptyText.visibility =
+                    if (pdfList.isEmpty()) View.VISIBLE else View.GONE
+                recyclerView.visibility = View.VISIBLE
+
+                adapter.notifyDataSetChanged()
             }
+
+            override fun onCancelled(error: DatabaseError) {
+                Toast.makeText(
+                    requireContext(),
+                    "Failed to load PDFs",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        })
     }
 }

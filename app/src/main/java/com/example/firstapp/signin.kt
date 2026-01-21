@@ -58,9 +58,12 @@ class signin : AppCompatActivity() {
 
                 if (dbEmail == email && dbPass == pass) {
 
-                    // 🔐 Save username in SharedPreferences
+                    val userKey = userSnap.key  // 🔥 THIS IS THE FIX
+                    val dbUsername = userSnap.child("username").value.toString()
+
                     val sharedPref = getSharedPreferences("USER_PREF", MODE_PRIVATE)
                     sharedPref.edit()
+                        .putString("USER_KEY", userKey)
                         .putString("USERNAME", dbUsername)
                         .apply()
 
@@ -69,6 +72,7 @@ class signin : AppCompatActivity() {
                     finish()
                     return@addOnSuccessListener
                 }
+
             }
 
             Toast.makeText(this, "Incorrect email or password", Toast.LENGTH_SHORT).show()
